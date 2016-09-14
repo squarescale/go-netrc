@@ -43,6 +43,27 @@ type Netrc struct {
 	updateLock sync.Mutex
 }
 
+// FindMachines returns the Machines in n named by name. If a machine named by
+// name exists, it is returned. If no Machine with name name is found and there
+// is a ``default'' machine, the ``default'' machine is returned. Otherwise, am
+// empty slice is returned.
+func (n *Netrc) FindMachines(name string) (res []*Machine) {
+	// TODO(bgentry): not safe for concurrency
+	var def *Machine
+	for _, m := range n.machines {
+		if m.Name == name {
+			res = append(res, m)
+		}
+		if m.IsDefault() {
+			def = m
+		}
+	}
+	if def != nil && len(res) == 0 {
+		res = append(res, def)
+	}
+	return
+}
+
 // FindMachine returns the Machine in n named by name. If a machine named by
 // name exists, it is returned. If no Machine with name name is found and there
 // is a ``default'' machine, the ``default'' machine is returned. Otherwise, nil
