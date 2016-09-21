@@ -104,6 +104,13 @@ func (n *Netrc) MarshalText() (text []byte, err error) {
 		}
 		text = append(text, n.tokens[i].rawvalue...)
 	}
+
+	tmp := strings.Replace(string(text), "\n\n", "\n", -1)
+	if !strings.HasSuffix(tmp, "\n") {
+		tmp += "\n"
+	}
+
+	text = []byte(tmp)
 	return
 }
 
@@ -129,19 +136,19 @@ func (n *Netrc) NewMachine(name, login, password, account string) *Machine {
 		},
 		logintoken: &token{
 			kind:     tkLogin,
-			rawkind:  []byte("\n\tlogin"),
+			rawkind:  []byte("\n  login"),
 			value:    login,
 			rawvalue: []byte(" " + login),
 		},
 		passtoken: &token{
 			kind:     tkPassword,
-			rawkind:  []byte("\n\tpassword"),
+			rawkind:  []byte("\n  password"),
 			value:    password,
 			rawvalue: []byte(" " + password),
 		},
 		accounttoken: &token{
 			kind:     tkAccount,
-			rawkind:  []byte("\n\taccount"),
+			rawkind:  []byte("\n  account"),
 			value:    account,
 			rawvalue: []byte(" " + account),
 		},
